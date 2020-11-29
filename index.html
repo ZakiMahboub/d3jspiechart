@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .arc text {
+            font: 10px sans-serif;
+            text-anchor: middle;
+        }
+
+        .arc path {
+            stroke: #fff;
+        }
+
+        .title {
+            fill: teal;
+            font-weight: bold;
+            text-anchor: middle;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+</head>
+<body>
+    <svg width="500" height="400"></svg>
+    <script>
+
+        var svg = d3.select("svg"),
+            width = svg.attr("width"),
+            height = svg.attr("height"),
+            radius = Math.min(width, height) / 2,
+            chartTitle = "This is the chart Title",
+            legend_x = width * 0.7
+
+        var g = svg.append("g")
+                   .attr("transform", "translate(" + (width / 2 - width * 0.18) + "," + height / 2 + ")");
+
+        var color = d3.scaleOrdinal(['#003f5c','#7a5195','#ef5675','#ffa600','#e41a1c','#888']);
+
+        var pie = d3.pie().value(function(d) {
+                return d.percent;
+            });
+
+        var path = d3.arc()
+                     .outerRadius(radius - 50)
+                     .innerRadius(100);
+
+
+        var label = d3.arc()
+                      .outerRadius(radius)
+                      .innerRadius(radius - 150);
+
+        // Handmade legend
+        svg.append("circle").attr("cx",legend_x).attr("cy",100).attr("r", 6).style("fill", "#003f5c")
+        svg.append("text").attr("x", legend_x + 20).attr("y", 100).text("Maroc").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("circle").attr("cx",legend_x).attr("cy",120).attr("r", 6).style("fill", "#7a5195")
+        svg.append("text").attr("x", legend_x + 20).attr("y", 120).text("Algerie").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("circle").attr("cx",legend_x).attr("cy",140).attr("r", 6).style("fill", "#ef5675")
+        svg.append("text").attr("x", legend_x + 20).attr("y", 140).text("Tunisie").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("circle").attr("cx",legend_x).attr("cy",160).attr("r", 6).style("fill", "#ffa600")
+        svg.append("text").attr("x", legend_x + 20).attr("y", 160).text("Egypt").style("font-size", "15px").attr("alignment-baseline","middle")
+        svg.append("circle").attr("cx",legend_x).attr("cy",180).attr("r", 6).style("fill", "#888")
+        svg.append("text").attr("x", legend_x + 20).attr("y", 180).text("Libye").style("font-size", "15px").attr("alignment-baseline","middle")
+
+        d3.csv("browseruse.csv", function(error, data) {
+            if (error) {
+                throw error;
+            }
+            var arc = g.selectAll(".arc")
+                       .data(pie(data))
+                       .enter().append("g")
+                       .attr("class", "arc");
+
+            arc.append("path")
+               .attr("d", path)
+               .attr("fill", function(d) { return color(d.data.country); });
+
+            console.log(arc)
+
+            // if you want to add labels in the pie
+            arc.append("text")
+               .attr("transform", function(d) {
+                        return "translate(" + label.centroid(d) + ")";
+                })
+               .text(function(d) { return d.data.percent == 0 ? "": d.data.percent; });
+            });
+
+            svg.append("g")
+               .attr("transform", "translate(" + (width / 2) + "," + 20 + ")")
+               .append("text")
+               .text(chartTitle)
+               .attr("class", "title")
+    </script>
+</body>
+</html>
