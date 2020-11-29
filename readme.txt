@@ -1,4 +1,4 @@
-les données doivent être trier par pays comme suivant:
+les données doivent être tries par pays comme suivant:
 Maroc
 Algerie
 Tunisie
